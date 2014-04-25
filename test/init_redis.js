@@ -1,11 +1,11 @@
 var request = require('request');
 
-for (var i = 1; i <= 5; i++) {
+for (var i = 11; i <= 15; i++) {
     (function(i) {
         request.post({
             url: 'http://localhost:3000',
             json:{
-                "user": 'jeffwan',
+                "user": 'jeffwan211',
                 "type": "male",
                 "content": "content" + i
             }
@@ -14,12 +14,12 @@ for (var i = 1; i <= 5; i++) {
 }
 
 
-for (var i = 6; i <= 10; i++) {
+for (var i = 16; i <= 20; i++) {
     (function(i) {
         request.post({
             url: 'http://localhost:3000',
             json:{
-                "user": 'jeffwan',
+                "user": 'jeffwan12s',
                 "type": "female",
                 "content": "content" + i
             }

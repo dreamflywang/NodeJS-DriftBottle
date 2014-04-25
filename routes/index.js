@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var redis = require('../models/redis')
+var mongodb = require('../models/mongodb.js');
 
 // Throw a bottle
 // POST  user==xx&type=xxx&content=xxx[&time=xxx]
-
 router.post('/', function(req, res) {
     if (!(req.body.user && req.body.type && req.body.content)) {
         return res.json({
@@ -28,15 +28,45 @@ router.get('/', function(req, res) {
         });
     }
 
-    var info = {
-        user: req.query.user,
-        type: req.query.type || 'all'
-    }
+//    var info = {
+//        user: req.query.user,
+//        type: req.query.type || 'all'
+//    }
 
-    redis.pick(info, function(result) {
+    redis.pick(req.query, function(result) {
+        res.json(result);
+        if (result.code == 1) {
+            mongodb.save(req.query.user, result.msg);
+        }
+
+    });
+})
+
+
+// throw back a bottle
+router.post('/back', function(req, res) {
+    redis.throwBack(req.body, function(result) {
+        res.json(result);
+    })
+})
+
+
+// Get all bottles of a user
+// GET /user/jeffwan
+
+router.get('/user/:user', function(req, res) {
+    mongodb.getAll(req.params.user, function(result) {
+        res.json(result);
+    })
+})
+
+
+router.get('/bottle/:id', function(req, res) {
+    mongodb.getOne(req.params.id, function(result) {
         res.json(result);
     });
 })
+
 
 
 
