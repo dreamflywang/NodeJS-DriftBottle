@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/driftbottle');
+//mongoose.connect('mongodb://driftbottle:driftbottle@ds035498.mongolab.com:35498/driftbottle');
 
 
 // Define bottle model
@@ -46,6 +47,13 @@ exports.getOne = function(id, callback) {
             });
         }
 
+        if (bottle == null){
+            callback({
+                code: 1,
+                msg: 'bottle not exist'
+            });
+        }
+
         // return drift
         callback({
             code: 1,
@@ -54,3 +62,59 @@ exports.getOne = function(id, callback) {
     });
 }
 
+
+exports.reply = function(id, reply, callback) {
+    reply.time = reply.time || Date.now();
+    // find bottle by id
+    bottleModel.findById(id, function(err, _bottle) {
+        if (err) {
+            return callback({
+                code: 0,
+                msg:'reply bottle fail...'
+            });
+        }
+
+        var newBottle = {};
+        newBottle.bottle = _bottle.bottle;
+        newBottle.message = _bottle.message;
+        // if the picker first reply, add owner
+
+        if (newBottle.bottle.length === 1) {
+            newBottle.bottle.push(_bottle.message[0][0]); // _bottle..messae[0][0] == owner
+        }
+
+        // add reply message
+        newBottle.message.push([reply.user, reply.time, reply.content]);
+        bottleModel.findByIdAndUpdate(id, newBottle, function(err, bottle) {
+            if (err) {
+                return callback({
+                    code : 0,
+                    msg: 'reply bottle fail'
+                })
+            }
+
+            callback({
+                code: 1,
+                msg:bottle
+            });
+        });
+    });
+};
+
+
+
+exports.delete = function(id, callback) {
+    bottleModel.findByIdAndRemove(id, function(err) {
+        if (err) {
+            return callback({
+                code:0,
+                msg:'delete bottle fail'
+            })
+        }
+
+        callback({
+            code: 1,
+            msg: 'delete successfully!'
+        });
+    });
+}

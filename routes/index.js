@@ -68,6 +68,29 @@ router.get('/bottle/:id', function(req, res) {
 })
 
 
+// chat
+router.post('/reply/:id', function(req, res) {
+    if (!req.body.user && req.body.content) {
+        return res.json({
+            code : 0,
+            msg: 'Information not complete!'
+        });
+    }
+
+    mongodb.reply(req.params.id, req.body, function(result) {
+       res.json(result);
+    });
+})
+
+// Delete bottle
+router.get('/delete/:id', function(req, res) {
+    mongodb.delete(req.params.id, function(result) {
+        res.json(result);
+    })
+})
+
+
+
 
 
 module.exports = router;
